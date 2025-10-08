@@ -30,9 +30,32 @@ class Matrix {
 
 		~Matrix( void ) { delete [] data_; }
 
-		Matrix& operator=( const Matrix& other ) {
+		class MatrixException : public std::runtime_error {
+			public:
+				MatrixException(const std::string& msg)
+					: std::runtime_error(msg) {}
+		};
 
+		Matrix& operator=( const Matrix& other ) {
+			if (this != &other) {
+				if (rows_ != other.rows_ || cols_ != other.cols_) {
+					delete [] data_;
+					rows_ = other.rows_;
+					cols_ = other.cols_;
+					data_ = new T[rows_ * cols_];
+				}
+				std::copy(other.data_, other.data_ + rows_ * cols_, data_);
+			}
+			return *this;
 		}
+
+		Matrix& operator=( Matrix&& other ) {
+			std::swap(rows_, other.rows_);
+			std::swap(cols_, other.cols_);
+			std::swap(data_, other.data_);
+			return *this;
+		}
+
 
 		size_t getRows( void ) {
 			return rows_;
