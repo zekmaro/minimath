@@ -1,6 +1,7 @@
 #ifndef FILE_VECTOR
 #define FILE_VECTOR
 
+#include <cstddef>
 #include <iostream>
 
 template <typename T>
@@ -29,7 +30,30 @@ class Matrix {
 
 		~Matrix( void ) { delete [] data_; }
 
-		Matrix& operator=( const Matrix& other ) {}
+		Matrix& operator=( const Matrix& other ) {
+
+		}
+
+		size_t getRows( void ) {
+			return rows_;
+		}
+
+		size_t getCols( void ) {
+			return cols_;
+		}
+
+		T& operator()(size_t i, size_t j) {
+			if (i >= rows_ || j >= cols_)
+    			throw std::out_of_range("Matrix index out of range");
+			return data_[cols_ * i + j];
+		}
+
+		const T& operator()(size_t i, size_t j) const {
+			if (i >= rows_ || j >= cols_)
+    			throw std::out_of_range("Matrix index out of range");
+			return data_[cols_ * i + j];
+		}
+
 };
 
 #endif
