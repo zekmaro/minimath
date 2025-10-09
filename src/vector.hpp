@@ -38,7 +38,6 @@ namespace ASC_bla
       return *this;
     }
     
-    auto View() const { return VectorView(size, dist, data); }
     size_t Size() const { return size; }
     T & operator()(size_t i) { return data[dist*i]; }
     const T & operator()(size_t i) const { return data[dist*i]; }
