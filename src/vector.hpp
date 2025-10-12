@@ -17,6 +17,13 @@ namespace ASC_bla
     size_t size;
     TDIST dist;
   public:
+    VectorView() = default;
+    VectorView(const VectorView &) = default;
+    
+    template <typename TDIST2>
+    VectorView (const VectorView<T,TDIST2> & v2)
+      : data(v2.Data()), size(v2.Size()), dist(v2.Dist()) { }
+    
     VectorView (size_t _size, T * _data)
       : data(_data), size(_size) { }
     
@@ -37,9 +44,11 @@ namespace ASC_bla
         data[dist*i] = scal;
       return *this;
     }
-    
-    auto View() const { return VectorView(size, dist, data); }
+
+    T * Data() const { return data; }
     size_t Size() const { return size; }
+    auto Dist() const { return dist; }
+    
     T & operator()(size_t i) { return data[dist*i]; }
     const T & operator()(size_t i) const { return data[dist*i]; }
     
@@ -98,8 +107,8 @@ namespace ASC_bla
 
     Vector & operator= (Vector && v2)
     {
-      for (size_t i = 0; i < size; i++)
-        data[i] = v2(i);
+      std::swap(size, v2.size);
+      std::swap(data, v2.data);
       return *this;
     }
   };
