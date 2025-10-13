@@ -8,28 +8,27 @@ namespace ASC_bla
   class VecExpr
   {
   public:
-    auto Upcast() const { return static_cast<const T&> (*this); }
-    size_t Size() const { return Upcast().Size(); }
-    auto operator() (size_t i) const { return Upcast()(i); }
+    auto upcast() const { return static_cast<const T&> (*this); }
+    size_t size() const { return upcast().size(); }
+    auto operator() (size_t i) const { return upcast()(i); }
   };
   
  
   template <typename TA, typename TB>
-  class SumVecExpr : public VecExpr<SumVecExpr<TA,TB>>
+  class AddVecExpr : public VecExpr<AddVecExpr<TA,TB>>
   {
     TA a;
     TB b;
   public:
-    SumVecExpr (TA _a, TB _b) : a(_a), b(_b) { }
-
+    AddVecExpr (TA _a, TB _b) : a(_a), b(_b) { }
     auto operator() (size_t i) const { return a(i)+b(i); }
-    size_t Size() const { return a.Size(); }      
+    size_t size() const { return a.size(); }      
   };
   
   template <typename TA, typename TB>
   auto operator+ (const VecExpr<TA> & a, const VecExpr<TB> & b)
   {
-    return SumVecExpr(a.Upcast(), b.Upcast());
+    return AddVecExpr(a.upcast(), b.upcast());
   }
 
 
@@ -42,15 +41,14 @@ namespace ASC_bla
     TV vec;
   public:
     ScaleVecExpr (TSCAL _scal, TV _vec) : scal(_scal), vec(_vec) { }
-
     auto operator() (size_t i) const { return scal*vec(i); }
-    size_t Size() const { return vec.Size(); }      
+    size_t size() const { return vec.size(); }      
   };
   
   template <typename T>
   auto operator* (double scal, const VecExpr<T> & v)
   {
-    return ScaleVecExpr(scal, v.Upcast());
+    return ScaleVecExpr(scal, v.upcast());
   }
 
 
@@ -58,9 +56,9 @@ namespace ASC_bla
   template <typename T>
   std::ostream & operator<< (std::ostream & ost, const VecExpr<T> & v)
   {
-    if (v.Size() > 0)
+    if (v.size() > 0)
       ost << v(0);
-    for (size_t i = 1; i < v.Size(); i++)
+    for (size_t i = 1; i < v.size(); i++)
       ost << ", " << v(i);
     return ost;
   }
