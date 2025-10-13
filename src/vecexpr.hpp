@@ -15,12 +15,12 @@ namespace ASC_bla
   
  
   template <typename TA, typename TB>
-  class AddVecExpr : public VecExpr<AddVecExpr<TA,TB>>
+  class SumVecExpr : public VecExpr<SumVecExpr<TA,TB>>
   {
     TA a;
     TB b;
   public:
-    AddVecExpr (TA _a, TB _b) : a(_a), b(_b) { }
+    SumVecExpr (TA _a, TB _b) : a(_a), b(_b) { }
     auto operator() (size_t i) const { return a(i)+b(i); }
     size_t size() const { return a.size(); }      
   };
@@ -28,7 +28,7 @@ namespace ASC_bla
   template <typename TA, typename TB>
   auto operator+ (const VecExpr<TA> & a, const VecExpr<TB> & b)
   {
-    return AddVecExpr(a.upcast(), b.upcast());
+    return SumVecExpr(a.upcast(), b.upcast());
   }
 
 
