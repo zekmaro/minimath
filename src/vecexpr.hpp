@@ -3,7 +3,7 @@
 
 #include <cassert>
 
-namespace ASC_bla
+namespace minimath
 {
 
   template <typename T>

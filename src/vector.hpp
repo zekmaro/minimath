@@ -6,7 +6,7 @@
 #include "vecexpr.hpp"
 
 
-namespace ASC_bla
+namespace minimath
 {
  
   template <typename T, typename TDIST = std::integral_constant<size_t,1> >
