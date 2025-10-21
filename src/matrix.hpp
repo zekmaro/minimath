@@ -12,11 +12,15 @@ namespace minimath {
 
 	template <typename T, template Order>
 	class MatrixView {
-		size_t	m_rows_;
-		size_t	m_cols_;
-		size_t	m_dist_;
-		T*		m_data_;
+		protected:
+			size_t	m_rows_;
+			size_t	m_cols_;
+			size_t	m_dist_;
+			T*		m_data_;
+
 		public:
+
+			// m_dist should be checked by construction
 			MatrixView(size_t m_rows, size_t m_cols, size_t m_dist, T* m_data)
 				: m_rows_(m_rows), m_cols_(m_cols), m_dist_(m_dist), m_data_(m_data) {}
 			
@@ -62,31 +66,40 @@ namespace minimath {
 	}
 
 
-	template <typename T>
-	class Matrix {
-		size_t	rows_;
-		size_t	cols_;
-		T*		data_;
-	
+	template <typename T, template Order>
+	class Matrix: public MatrixView<T, Order> {
 		public:
 			Matrix( void );
 	
 			Matrix( size_t rows, size_t cols )
-				: rows_(rows), cols_(cols), data_(new T[rows * cols]) { }
+				: MatrixView<T, Order>(
+					rows,
+					cols,
+					(Order == ROW_MAJOR ? cols : rows),
+					new T[rows * cols]
+				) {}
 	
-			Matrix( const Matrix& other )
-				: Matrix( other.rows_, other.cols_ ) {
-					std::copy(other.data_, other.data_ + rows_ * cols_, data_);
+			Matrix(const Matrix& other)
+				: MatrixView<T, Order>(
+					other.m_rows_,
+					other.m_cols_,
+					other.m_dist_,
+					new T[other.m_rows_ * other.m_cols_]
+				) {
+					std::copy(other.m_data_, other.m_data_ + other.m_rows_ * other.m_cols_, m_data_);
 				}
 	
-			Matrix( Matrix&& other )
-				: rows_(0), cols_(0), data_(nullptr) {
-					std::swap(rows_, other.rows_);
-					std::swap(cols_, other.cols_);
-					std::swap(data_, other.data_);
+			Matrix(Matrix&& other) noexcept
+				: MatrixView<T, Order>(
+					other.m_rows,
+					other.m_cols,
+					other.m_dist,
+					other.m_data
+				) {
+					other.m_data = nullptr;
 				}
 	
-			~Matrix( void ) { delete [] data_; }
+			~Matrix( void ) { delete [] m_data_; }
 	
 			class MatrixException : public std::runtime_error {
 				public:
@@ -97,23 +110,24 @@ namespace minimath {
 			Matrix& operator=( const Matrix& other ) {
 				if (this != &other) {
 					if (rows_ != other.rows_ || cols_ != other.cols_) {
-						delete [] data_;
-						rows_ = other.rows_;
-						cols_ = other.cols_;
-						data_ = new T[rows_ * cols_];
+						delete [] m_data_;
+						m_rows_ = other.rows_;
+						m_cols_ = other.cols_;
+						m_dist_ = other.m_dist_;
+						m_data_ = new T[rows_ * cols_];
 					}
-					std::copy(other.data_, other.data_ + rows_ * cols_, data_);
+					std::copy(other.data_, other.data_ + m_rows_ * m_cols_, m_data_);
 				}
 				return *this;
 			}
 	
-			Matrix& operator=( Matrix&& other ) {
-				std::swap(rows_, other.rows_);
-				std::swap(cols_, other.cols_);
-				std::swap(data_, other.data_);
+			Matrix& operator=( Matrix&& other ) noexcept {
+				std::swap(m_rows_, other.m_rows_);
+				std::swap(m_cols_, other.m_cols_);
+				std::swap(m_dist_, other.m_dist_)
+				std::swap(m_data_, other.m_data_);
 				return *this;
 			}
-	
 	
 			size_t getRows( void ) {
 				return rows_;
@@ -124,15 +138,27 @@ namespace minimath {
 			}
 	
 			T& operator()(size_t i, size_t j) {
-				if (i >= rows_ || j >= cols_)
+				if (i >= m_rows || j >= m_cols) {
 					throw MatrixException("Matrix index out of range");
-				return data_[cols_ * i + j];
+				}
+				if constexpr (Order == ROW_MAJOR) {
+					return m_data[i * m_dist + j];
+				}
+				else {
+					return m_data[j * m_dist + i];
+				}
 			}
 	
-			const T& operator()(size_t i, size_t j) const {
-				if (i >= rows_ || j >= cols_)
+			const T& operator()(size_t i, size_t j) {
+				if (i >= m_rows || j >= m_cols) {
 					throw MatrixException("Matrix index out of range");
-				return data_[cols_ * i + j];
+				}
+				if constexpr (Order == ROW_MAJOR) {
+					return m_data[i * m_dist + j];
+				}
+				else {
+					return m_data[j * m_dist + i];
+				}
 			}
 
 			Vector<T>& operator*(const Vector<T>& vec) {
