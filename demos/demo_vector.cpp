@@ -1,7 +1,7 @@
 #include <iostream>
 
-#include <vector.hpp>
-#include <matrix.hpp>
+#include <Vector.hpp>
+#include <Matrix.hpp>
 
 namespace bla = minimath;
 

@@ -1,3 +1,2 @@
-add_executable (demo_vector demo_vector.cpp)
-target_sources (demo_vector PUBLIC ../src/vector.hpp ../src/matrix.hpp)
-target_sources (demo_vector PUBLIC ../src/vector.hpp ../src/vecexpr.hpp)
+add_executable (matrix_demo matrix_demo.cpp)
+target_sources (matrix_demo PUBLIC ../src/Vector.hpp ../src/Matrix.hpp)

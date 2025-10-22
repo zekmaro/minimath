@@ -3,7 +3,7 @@
 
 #include <iostream>
 
-#include "vecexpr.hpp"
+#include "VecExpr.hpp"
 
 
 namespace minimath
