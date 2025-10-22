@@ -4,14 +4,14 @@
 #include <iostream>
 #include <cstddef>
 
-#include "vector.hpp"
+#include "matrixexpr.hpp"
 
 enum ORDERING { ROW_MAJOR, COL_MAJOR };
 
 namespace minimath {
 
 	template <typename T, template Order>
-	class MatrixView {
+	class MatrixView : MatExpr<MatrixView<T, Order>> {
 		protected:
 			size_t	m_rows_;
 			size_t	m_cols_;
@@ -130,11 +130,11 @@ namespace minimath {
 			}
 	
 			size_t getRows( void ) {
-				return rows_;
+				return m_rows_;
 			}
 	
 			size_t getCols( void ) {
-				return cols_;
+				return m_cols_;
 			}
 	
 			T& operator()(size_t i, size_t j) {
@@ -162,11 +162,16 @@ namespace minimath {
 			}
 
 			Vector<T>& operator*(const Vector<T>& vec) {
-				if (cols_ != vec.size) {
+				if (m_cols_ != vec.size) {
 					throw MatrixException("Incorrect dimentions!")
 				}
 				
 			}
+
+			// Sum with Matrix
+			// Multplication with Matrix
+			// Inverse
+			// Transpose
 	};
 
 }
