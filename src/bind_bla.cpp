@@ -1,9 +1,10 @@
 #include <sstream>
 #include <pybind11/pybind11.h>
 
-#include "vector.hpp"
+#include "Vector.hpp"
+#include "Matrix.hpp"
 
-using namespace ASC_bla;
+using namespace minimath;
 namespace py = pybind11;
 
 
@@ -61,5 +62,38 @@ PYBIND11_MODULE(bla, m) {
           std::memcpy(&v(0), PYBIND11_BYTES_AS_STRING(mem.ptr()), v.size()*sizeof(double));
           return v;
         }))
+    ;
+
+    py::class_<Matrix<double, ROW_MAJOR>> (m, "Matrix")
+        .def(py::init<size_t, size_t>(),
+          py::arg("rows"), py::arg("cols"),
+          "create matrix with given number of rows and columns")
+
+        .def("__mul__", [](const Matrix<double, ROW_MAJOR>& A, const Matrix<double, ROW_MAJOR>& B) {
+          return Matrix<double, ROW_MAJOR>(A * B);
+        },
+        "Matrices multiplication")
+
+        .def("__rmul__", [](double scalar, const Matrix<double, ROW_MAJOR> &A) {
+          return Matrix<double, ROW_MAJOR>(scalar * A);
+        },
+        "Scalar times Matrix")
+
+        .def("__str__", [](const Matrix<double, ROW_MAJOR> &A) {
+          std::stringstream s;
+          s << A;
+          return s.str();
+        })
+
+        .def("__getitem__",
+          [](Matrix<double, ROW_MAJOR> self, std::tuple<int, int> ind) {
+              return self(std::get<0>(ind), std::get<1>(ind));
+          })
+
+        .def_property_readonly("shape",
+          [](const Matrix<double, ROW_MAJOR>& self) {
+              return std::tuple(self.rows(), self.cols());
+          })
+    
     ;
 }

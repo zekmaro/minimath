@@ -4,7 +4,7 @@
 # from bla import Vector
 
 # import from the installed ASCsoft package:
-from ASCsoft.bla import Vector
+from ASCsoft.bla import Vectol
 
 x = Vector(3)
 y = Vector(3)

@@ -46,18 +46,24 @@ namespace minimath {
 	}
 
 	template <typename Scaler, typename A>
-	class ScaleMatExpr: public MatExpr<ScaleMatExpr<Scaler, A>> {
+	class ScaleMatExpr : public MatExpr<ScaleMatExpr<Scaler, A>> {
 		Scaler s_;
-		A a_;
+		const A& a_;
 	public:
-		ScaleMatExpr(Scaler s, A a): s_(s), a_(a) {}
+		ScaleMatExpr(Scaler s, const A& a) : s_(s), a_(a) {}
 		size_t rows() const { return a_.rows(); }
 		size_t cols() const { return a_.cols(); }
-    	auto operator()(size_t i, size_t j) const { return s_ * a_(i,j); }
+		auto operator()(size_t i, size_t j) const { return s_ * a_(i, j); }
 	};
 
-	template <typename Scaler, typename A>
+
+	template <typename A, typename Scaler>
 	auto operator*(const Scaler& s, const MatExpr<A>& a) {
+		return ScaleMatExpr<Scaler, A>(s, a.derived());
+	}
+
+	template <typename A, typename Scaler>
+	auto operator*(const MatExpr<A>& a, const Scaler& s) {
 		return ScaleMatExpr<Scaler, A>(s, a.derived());
 	}
 

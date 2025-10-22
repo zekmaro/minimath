@@ -89,6 +89,19 @@ namespace minimath {
 				) {
 					std::copy(other.m_data_, other.m_data_ + other.m_rows_ * other.m_cols_, this->m_data_);
 				}
+			
+			template <typename Expr>
+			Matrix(const Expr& expr)
+				: MatrixView<T, Order>(
+					expr.rows(),
+					expr.cols(),
+					(Order == ROW_MAJOR ? expr.cols() : expr.rows()),
+					new T[expr.rows() * expr.cols()]
+				) {
+					for (size_t i = 0; i < expr.rows(); i++)
+						for (size_t j = 0; j < expr.cols(); j++)
+							(*this)(i, j) = expr(i, j);
+				}
 	
 			Matrix(Matrix&& other) noexcept
 				: MatrixView<T, Order>(

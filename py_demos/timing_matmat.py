@@ -1,6 +1,8 @@
 from ngsolve import *
 from time import time
 
+from ASCsoft.bla import Matrix
+
 n = 1
 
 data = []

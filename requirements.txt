@@ -1,0 +1,14 @@
+# Build system
+setuptools>=68.0
+wheel
+scikit-build>=0.17
+cmake>=3.22
+
+# Pybind11 for C++/Python bindings
+pybind11>=2.11
+
+# Optional: plotting + benchmarking tools (used in your demo)
+matplotlib>=3.8
+numpy>=1.26
+
+ngsolve
